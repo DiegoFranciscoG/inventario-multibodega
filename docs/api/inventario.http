@@ -1,0 +1,104 @@
+### Colección de ejemplos (REST Client de VS Code / IntelliJ HTTP Client)
+# Define demoPassword en tu entorno local del cliente HTTP (no la escribas aquí).
+@baseUrl = http://localhost:8080
+@token = pega-aqui-el-accessToken
+
+### 1. Login (usuarios demo: supervisor@demo.local, operador@demo.local, auditor@demo.local)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"email": "supervisor@demo.local", "password": "{{demoPassword}}"}
+
+### 2. Usuario actual y sus bodegas
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### 3. Productos (búsqueda por nombre, SKU o GTIN)
+GET {{baseUrl}}/api/products?q=arroz&page=0&size=20
+Authorization: Bearer {{token}}
+
+### 4. Ingreso con lote y vencimiento (recalcula el costo promedio)
+POST {{baseUrl}}/api/movements/receipts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "warehouseId": 1,
+  "referenceTypeCode": "01",
+  "referenceNumber": "001-001-000001234",
+  "reason": "Compra a proveedor",
+  "lines": [
+    {"productId": 1, "locationId": 2, "quantity": 50, "unitCost": 2.10, "lotNumber": "L-ARZ-09", "expiryDate": "2027-06-30"}
+  ]
+}
+
+### 5. Egreso por FEFO (sin ubicación ni lote: el sistema asigna lo que vence antes)
+POST {{baseUrl}}/api/movements/issues
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"warehouseId": 1, "referenceTypeCode": "PED", "referenceNumber": "PED-0200", "lines": [{"productId": 1, "quantity": 25}]}
+
+### 6. Transferencia entre bodegas (una sola transacción)
+POST {{baseUrl}}/api/movements/transfers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"sourceWarehouseId": 1, "targetWarehouseId": 2, "referenceTypeCode": "OT", "referenceNumber": "OT-0100",
+ "lines": [{"productId": 1, "quantity": 10, "toLocationId": 13}]}
+
+### 7. Kárdex valorizado de un producto
+GET {{baseUrl}}/api/kardex?productId=1&from=2026-01-01&to=2026-12-31
+Authorization: Bearer {{token}}
+
+### 8. Kárdex en Excel
+GET {{baseUrl}}/api/kardex/export?productId=1
+Authorization: Bearer {{token}}
+
+### 9. Escaneo: GTIN, GS1-128/QR, GS1 Digital Link, QR de ubicación o SKU
+POST {{baseUrl}}/api/scan
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"code": "https://id.example.com/01/09527001000019/10/L-ARZ-01?17=270630"}
+
+### 10. Alertas
+GET {{baseUrl}}/api/alerts/low-stock
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/api/alerts/expiring-lots?days=30
+Authorization: Bearer {{token}}
+
+### 11. Conteo cíclico: crear (ciego), contar, enviar y aprobar (otra persona)
+POST {{baseUrl}}/api/cycle-counts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"warehouseId": 1, "aisle": "02", "notes": "Conteo semanal"}
+
+###
+PUT {{baseUrl}}/api/cycle-counts/1/lines/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"countedQuantity": 34, "note": "caja abierta"}
+
+###
+POST {{baseUrl}}/api/cycle-counts/1/submit
+Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}/api/cycle-counts/1/approve
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"notes": "Diferencia revisada con el jefe de bodega"}
+
+### 12. Conciliación kárdex = stock = valorización
+GET {{baseUrl}}/api/reports/reconciliation
+Authorization: Bearer {{token}}
+
+### 13. Bitácora de auditoría (ADMIN o AUDITOR)
+GET {{baseUrl}}/api/audit-log?entityType=CycleCount
+Authorization: Bearer {{token}}
