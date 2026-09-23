@@ -39,12 +39,12 @@ erDiagram
   PRODUCT {
     bigint id PK
     varchar sku UK
-    char gtin UK "14 dígitos normalizado"
+    varchar gtin UK "14 dígitos normalizado"
     varchar name
     bigint category_id FK
     varchar base_uom_code FK
     boolean lot_controlled
-    char abc_class "A|B|C"
+    varchar abc_class "A|B|C"
     bigint version
   }
   STOCK {
@@ -129,16 +129,16 @@ erDiagram
 | unit_of_measure | code | varchar(3) | PK (UNECE Rec. 20/21) | R-23 |
 | unit_of_measure | name | varchar(40) | NOT NULL | R-23 |
 | product | sku | varchar(40) | UNIQUE, `^[A-Z0-9][A-Z0-9._-]{1,39}$` | |
-| product | gtin | char(14) | UNIQUE nullable, `^[0-9]{14}$` + dígito verificador validado en el servicio | R-11 |
+| product | gtin | varchar(14) | UNIQUE nullable, `^[0-9]{14}$` + dígito verificador validado en el servicio | R-11 |
 | product | name / description | varchar(150) / varchar(500) | NOT NULL / NULL | |
 | product | category_id | bigint | FK → category | |
 | product | base_uom_code | varchar(3) | FK → unit_of_measure | R-23 |
 | product | lot_controlled | boolean | NOT NULL | R-13 |
-| product | abc_class | char(1) | `CHECK IN ('A','B','C')` | R-20 |
+| product | abc_class | varchar(1) | `CHECK IN ('A','B','C')` | R-20 |
 | product | active, created_at, version | | NOT NULL | |
 | product_uom_conversion | product_id, uom_code | bigint, varchar(3) | UNIQUE (product_id, uom_code) | R-12 |
 | product_uom_conversion | factor | numeric(18,6) | `CHECK > 0` (unidades base por empaque) | R-12 |
-| product_uom_conversion | gtin | char(14) | UNIQUE nullable (GTIN-14 del empaque) | R-11, R-12 |
+| product_uom_conversion | gtin | varchar(14) | UNIQUE nullable (GTIN-14 del empaque) | R-11, R-12 |
 
 ### Almacenaje
 
