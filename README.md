@@ -168,4 +168,4 @@ Planificado: API en **Render** (servicio web gratis; duerme tras 15 min sin trá
 - Código bajo licencia [MIT](LICENSE).
 
 ## Autor
-**Diego Francisco Granda Zhingre** · [GitHub](https://github.com/DiegoFranciscoG)
+**Diego Francisco Granda Zhingre** · [GitHub](https://github.com/DiegoFranciscoG) · [LinkedIn](https://www.linkedin.com/in/diego-francisco-g-61b793254/) · [Portafolio](https://diegofranciscog.github.io/)
